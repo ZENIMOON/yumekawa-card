@@ -7,7 +7,13 @@ const CHARACTERS = {
         color: '#4a4a6a',      // 藍鼠色
         accentColor: '#8888aa',
         description: '主を持たぬ剣士',
-        // ドット絵データ（16x32ピクセル相当）
+        // 画像パス（32x32px PNG推奨）
+        images: {
+            idle: 'assets/images/characters/ronin_idle.png',
+            slash: 'assets/images/characters/ronin_slash.png',
+            defeat: 'assets/images/characters/ronin_defeat.png'
+        },
+        // フォールバック用ドット絵データ（16x16ピクセル）
         sprite: {
             idle: [
                 '................',
@@ -73,6 +79,11 @@ const CHARACTERS = {
         color: '#6a4a4a',      // 赤茶色
         accentColor: '#aa6666',
         description: '血気盛んな若武者',
+        images: {
+            idle: 'assets/images/characters/wakaSamurai_idle.png',
+            slash: 'assets/images/characters/wakaSamurai_slash.png',
+            defeat: 'assets/images/characters/wakaSamurai_defeat.png'
+        },
         sprite: {
             idle: [
                 '................',
@@ -138,6 +149,11 @@ const CHARACTERS = {
         color: '#5a5a5a',      // 灰色
         accentColor: '#999999',
         description: '達観した剣の達人',
+        images: {
+            idle: 'assets/images/characters/oldMaster_idle.png',
+            slash: 'assets/images/characters/oldMaster_slash.png',
+            defeat: 'assets/images/characters/oldMaster_defeat.png'
+        },
         sprite: {
             idle: [
                 '................',
@@ -203,6 +219,11 @@ const CHARACTERS = {
         color: '#6a4a5a',      // 紫がかった色
         accentColor: '#aa6688',
         description: '凛とした女武芸者',
+        images: {
+            idle: 'assets/images/characters/onnaSamurai_idle.png',
+            slash: 'assets/images/characters/onnaSamurai_slash.png',
+            defeat: 'assets/images/characters/onnaSamurai_defeat.png'
+        },
         sprite: {
             idle: [
                 '................',
@@ -268,6 +289,11 @@ const CHARACTERS = {
         color: '#6a5a4a',      // 茶色
         accentColor: '#aa9966',
         description: '修行を積んだ僧兵',
+        images: {
+            idle: 'assets/images/characters/souhei_idle.png',
+            slash: 'assets/images/characters/souhei_slash.png',
+            defeat: 'assets/images/characters/souhei_defeat.png'
+        },
         sprite: {
             idle: [
                 '................',
@@ -333,6 +359,11 @@ const CHARACTERS = {
         color: '#3a3a4a',      // 濃紺
         accentColor: '#666688',
         description: '闇に潜む忍者',
+        images: {
+            idle: 'assets/images/characters/shinobi_idle.png',
+            slash: 'assets/images/characters/shinobi_slash.png',
+            defeat: 'assets/images/characters/shinobi_defeat.png'
+        },
         sprite: {
             idle: [
                 '................',
@@ -398,6 +429,11 @@ const CHARACTERS = {
         color: '#5a4a3a',      // 土色
         accentColor: '#887766',
         description: '荒くれ者の野武士',
+        images: {
+            idle: 'assets/images/characters/nobushi_idle.png',
+            slash: 'assets/images/characters/nobushi_slash.png',
+            defeat: 'assets/images/characters/nobushi_defeat.png'
+        },
         sprite: {
             idle: [
                 '................',

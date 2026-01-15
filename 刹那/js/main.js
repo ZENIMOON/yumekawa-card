@@ -4,9 +4,13 @@ let renderer = null;
 let lastTime = 0;
 
 // 初期化
-function init() {
+async function init() {
     const canvas = document.getElementById('game-canvas');
     renderer = new Renderer(canvas);
+
+    // 背景画像をプリロード
+    await renderer.preloadBackgroundImages();
+
     game = new Game(renderer);
 
     // イベントリスナー設定
@@ -23,9 +27,30 @@ function setupEventListeners() {
         audioManager.init().then(() => {
             audioManager.startBGM();
             showGameScreen();
+            game.testMode = false; // 通常モード
             game.startGame();
         });
     });
+
+    // テストモード（削除時はこのブロックごと削除）
+    const testModeBtn = document.getElementById('test-mode-btn');
+    if (testModeBtn) {
+        testModeBtn.addEventListener('click', () => {
+            audioManager.init().then(() => {
+                audioManager.startBGM();
+                showGameScreen();
+                game.testMode = true; // テストモード有効
+                game.startGame();
+            }).catch((e) => {
+                console.error('Audio init failed:', e);
+                // オーディオ初期化失敗でもゲーム開始
+                showGameScreen();
+                game.testMode = true;
+                game.startGame();
+            });
+        });
+    }
+    // /テストモード
 
     // BGM/SEトグル
     document.getElementById('bgm-toggle').addEventListener('change', (e) => {

@@ -17,6 +17,9 @@ class Game {
         this.renderer = renderer;
         this.state = GameState.TITLE;
 
+        // テストモード（削除時はこの行を削除）
+        this.testMode = false;
+
         // スコア
         this.currentScore = 0;
         this.highScore = this.loadHighScore();
@@ -232,9 +235,13 @@ class Game {
     }
 
     // 戦闘開始（準備のみ、会話表示は別）
-    prepareBattle() {
+    async prepareBattle() {
         // 敵をランダムに選択
         this.enemyChar = getRandomEnemy();
+
+        // キャラクター画像をプリロード
+        await this.renderer.preloadCharacterImages(this.playerChar);
+        await this.renderer.preloadCharacterImages(this.enemyChar);
 
         // 3戦ごとに背景を変える
         if (this.currentScore > 0 && this.currentScore % 3 === 0) {
@@ -272,8 +279,8 @@ class Game {
     }
 
     // 戦闘開始（ゲーム開始時用、即座に会話表示）
-    startBattle() {
-        this.prepareBattle();
+    async startBattle() {
+        await this.prepareBattle();
         this.startDialogue();
     }
 
@@ -324,6 +331,12 @@ class Game {
                 break;
 
             case GameState.WAITING:
+                // テストモード：いつでも勝てる（削除時はこのif文を削除）
+                if (this.testMode) {
+                    this.reactionTime = 0;
+                    this.win();
+                    break;
+                }
                 // 早斬り - 敗北
                 this.lose('早すぎた……');
                 break;

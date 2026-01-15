@@ -8,17 +8,69 @@ class Renderer {
         this.height = 0;
         this.animationFrame = 0;
 
-        // 背景設定
+        // 画像キャッシュ
+        this.imageCache = {};
+        this.imageLoadPromises = {};
+
+        // 背景設定（画像パス追加）
         this.backgrounds = [
-            { name: 'susuki', skyColor: '#1a1a2e', groundColor: '#2a2020' },
-            { name: 'bamboo', skyColor: '#1e2a1e', groundColor: '#1a2818' },
-            { name: 'rain', skyColor: '#1a1a2e', groundColor: '#1a1a28' },
-            { name: 'snow', skyColor: '#2a2a3a', groundColor: '#3a3a4a' }
+            { name: 'susuki', skyColor: '#1a1a2e', groundColor: '#2a2020', image: 'assets/images/backgrounds/bg_susuki.png' },
+            { name: 'bamboo', skyColor: '#1e2a1e', groundColor: '#1a2818', image: 'assets/images/backgrounds/bg_bamboo.png' },
+            { name: 'rain', skyColor: '#1a1a2e', groundColor: '#1a1a28', image: 'assets/images/backgrounds/bg_rain.png' },
+            { name: 'snow', skyColor: '#2a2a3a', groundColor: '#3a3a4a', image: 'assets/images/backgrounds/bg_snow.png' }
         ];
         this.currentBackground = 0;
+        this.backgroundImages = {}; // 背景画像キャッシュ
 
         this.resize();
         window.addEventListener('resize', () => this.resize());
+    }
+
+    // 画像を読み込み（キャッシュ付き）
+    loadImage(src) {
+        if (this.imageCache[src]) {
+            return Promise.resolve(this.imageCache[src]);
+        }
+        if (this.imageLoadPromises[src]) {
+            return this.imageLoadPromises[src];
+        }
+
+        this.imageLoadPromises[src] = new Promise((resolve, reject) => {
+            const img = new Image();
+            img.onload = () => {
+                this.imageCache[src] = img;
+                resolve(img);
+            };
+            img.onerror = () => {
+                // 画像読み込み失敗時はnullを返す（フォールバック用）
+                this.imageCache[src] = null;
+                resolve(null);
+            };
+            img.src = src;
+        });
+
+        return this.imageLoadPromises[src];
+    }
+
+    // キャラクター画像をプリロード
+    async preloadCharacterImages(character) {
+        if (!character.images) return;
+
+        const states = ['idle', 'slash', 'defeat'];
+        for (const state of states) {
+            if (character.images[state]) {
+                await this.loadImage(character.images[state]);
+            }
+        }
+    }
+
+    // 背景画像をプリロード
+    async preloadBackgroundImages() {
+        for (const bg of this.backgrounds) {
+            if (bg.image) {
+                await this.loadImage(bg.image);
+            }
+        }
     }
 
     resize() {
@@ -39,7 +91,7 @@ class Renderer {
         this.ctx.imageSmoothingEnabled = false;
     }
 
-    // 背景を描画（縦画面・横並び用）
+    // 背景を描画（縦画面・横並び用、画像対応版）
     drawBackground() {
         const bg = this.backgrounds[this.currentBackground];
         const ctx = this.ctx;
@@ -47,6 +99,35 @@ class Renderer {
         const h = this.height;
         const ps = this.pixelSize;
 
+        // 背景画像があればそちらを使用
+        if (bg.image) {
+            const img = this.imageCache[bg.image];
+            if (img) {
+                // 画像を画面全体に描画（アスペクト比を維持してカバー）
+                const imgRatio = img.width / img.height;
+                const screenRatio = w / h;
+                let drawW, drawH, drawX, drawY;
+
+                if (imgRatio > screenRatio) {
+                    // 画像の方が横長：高さに合わせる
+                    drawH = h;
+                    drawW = h * imgRatio;
+                    drawX = (w - drawW) / 2;
+                    drawY = 0;
+                } else {
+                    // 画像の方が縦長：幅に合わせる
+                    drawW = w;
+                    drawH = w / imgRatio;
+                    drawX = 0;
+                    drawY = (h - drawH) / 2;
+                }
+
+                ctx.drawImage(img, drawX, drawY, drawW, drawH);
+                return;
+            }
+        }
+
+        // フォールバック：プログラム生成の背景
         // 空のグラデーション
         const gradient = ctx.createLinearGradient(0, 0, 0, h);
         gradient.addColorStop(0, bg.skyColor);
@@ -197,16 +278,52 @@ class Renderer {
         ctx.fill();
     }
 
-    // キャラクターを描画
+    // キャラクターを描画（画像対応版）
     drawCharacter(character, x, y, state = 'idle', flip = false, alpha = 1) {
         const ctx = this.ctx;
         const ps = this.pixelSize;
-        const sprite = character.sprite[state];
-
-        if (!sprite) return;
 
         ctx.save();
         ctx.globalAlpha = alpha;
+
+        // 画像があればそちらを使用
+        if (character.images && character.images[state]) {
+            const img = this.imageCache[character.images[state]];
+            if (img) {
+                // 画像の実サイズを取得し、アスペクト比を維持してスケール
+                let scale;
+                if (state === 'defeat') {
+                    // defeat（倒れた状態）は横長なので、高さ基準でスケール
+                    // idle/slashと同じキャラの高さを維持
+                    const baseHeight = ps * 16;
+                    scale = baseHeight / img.height;
+                } else {
+                    // idle/slashは縦長なので、幅基準でスケール
+                    const baseWidth = ps * 16;
+                    scale = baseWidth / img.width;
+                }
+                const imgW = img.width * scale;
+                const imgH = img.height * scale;
+
+                if (flip) {
+                    ctx.translate(x + imgW, y);
+                    ctx.scale(-1, 1);
+                    ctx.drawImage(img, 0, 0, imgW, imgH);
+                } else {
+                    ctx.drawImage(img, x, y, imgW, imgH);
+                }
+
+                ctx.restore();
+                return;
+            }
+        }
+
+        // フォールバック：テキストスプライトを使用
+        const sprite = character.sprite[state];
+        if (!sprite) {
+            ctx.restore();
+            return;
+        }
 
         if (flip) {
             ctx.translate(x + ps * 8, y);

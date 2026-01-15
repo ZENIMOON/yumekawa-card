@@ -1,0 +1,453 @@
+/* ドット絵風フォント用 */
+@font-face {
+    font-family: 'PixelMplus';
+    src: local('PixelMplus10'), local('PixelMplus12');
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: #000;
+    font-family: 'Hiragino Kaku Gothic ProN', 'PixelMplus', sans-serif;
+}
+
+#game-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    max-width: 100vw;
+    max-height: 100vh;
+    margin: 0 auto;
+    overflow: hidden;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+}
+
+#game-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+}
+
+.screen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* タイトル画面 */
+#title-screen {
+    background: linear-gradient(to bottom, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    flex-direction: column;
+}
+
+.title-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+}
+
+.wooden-sign {
+    background: linear-gradient(to bottom, #8B4513 0%, #A0522D 20%, #8B4513 40%, #6B3510 100%);
+    border: 6px solid #4a2810;
+    border-radius: 8px;
+    padding: 20px 40px;
+    box-shadow:
+        inset 0 2px 4px rgba(255,255,255,0.2),
+        inset 0 -2px 4px rgba(0,0,0,0.3),
+        4px 4px 0 #2a1808;
+    position: relative;
+}
+
+.wooden-sign::before,
+.wooden-sign::after {
+    content: '';
+    position: absolute;
+    top: -20px;
+    width: 12px;
+    height: 30px;
+    background: #4a2810;
+    border-radius: 3px;
+}
+
+.wooden-sign::before {
+    left: 25px;
+}
+
+.wooden-sign::after {
+    right: 25px;
+}
+
+.wooden-sign h1 {
+    font-size: 36px;
+    color: #1a0a00;
+    text-shadow: 2px 2px 0 #c4a574;
+    font-weight: bold;
+    letter-spacing: 6px;
+}
+
+.pixel-btn {
+    background: linear-gradient(to bottom, #4a4a4a 0%, #3a3a3a 50%, #2a2a2a 100%);
+    border: 4px solid #1a1a1a;
+    color: #fff;
+    font-size: 20px;
+    padding: 12px 36px;
+    cursor: pointer;
+    font-family: inherit;
+    letter-spacing: 4px;
+    box-shadow: 4px 4px 0 #0a0a0a;
+    transition: transform 0.1s, box-shadow 0.1s;
+}
+
+.pixel-btn:active {
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0 #0a0a0a;
+}
+
+.settings {
+    display: flex;
+    gap: 30px;
+    margin-top: 10px;
+}
+
+.toggle-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #888;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.toggle-label input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    accent-color: #c4a574;
+}
+
+.toggle-label input[type="checkbox"]:checked + span {
+    color: #fff;
+}
+
+/* ゲーム画面 */
+#game-screen {
+    pointer-events: auto;
+    touch-action: manipulation;
+}
+
+#ui-top {
+    position: absolute;
+    top: 15px;
+    left: 0;
+    right: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    font-size: 14px;
+    color: #fff;
+    text-shadow: 2px 2px 0 #000;
+    z-index: 10;
+}
+
+/* 木の板（反応時間表示）- フィールド上に配置 */
+#time-board {
+    position: absolute;
+    bottom: 25%;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 15;
+}
+
+#time-board::before {
+    content: '';
+    position: absolute;
+    bottom: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 8px;
+    height: 35px;
+    background: linear-gradient(to bottom, #5a4030, #3a2818);
+    border-radius: 2px;
+}
+
+#time-display {
+    background: linear-gradient(to bottom, #8B4513 0%, #A0522D 30%, #8B4513 70%, #6B3510 100%);
+    border: 4px solid #4a2810;
+    border-radius: 6px;
+    padding: 8px 20px;
+    font-size: 24px;
+    font-weight: bold;
+    color: #1a0a00;
+    text-shadow: 1px 1px 0 #c4a574;
+    box-shadow:
+        inset 0 2px 3px rgba(255,255,255,0.2),
+        inset 0 -2px 3px rgba(0,0,0,0.3),
+        3px 3px 0 #2a1808;
+    min-width: 100px;
+    text-align: center;
+    letter-spacing: 2px;
+}
+
+#time-display.excellent {
+    color: #006400;
+    text-shadow: 1px 1px 0 #90EE90;
+}
+
+#time-display.good {
+    color: #1a0a00;
+}
+
+#time-display.slow {
+    color: #8B0000;
+    text-shadow: 1px 1px 0 #FFB6C1;
+}
+
+#time-display.limit {
+    color: #1a0a00;
+    font-size: 18px;
+}
+
+#time-display.enemy {
+    color: #8B0000;
+    text-shadow: 1px 1px 0 #FFB6C1;
+}
+
+#dialogue-box {
+    position: absolute;
+    bottom: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.9);
+    border: 3px solid #c4a574;
+    padding: 12px 20px;
+    width: 90%;
+    max-width: 350px;
+    z-index: 20;
+}
+
+#dialogue-name {
+    color: #c4a574;
+    font-size: 12px;
+    display: block;
+    margin-bottom: 5px;
+}
+
+#dialogue-text {
+    color: #fff;
+    font-size: 15px;
+    line-height: 1.5;
+}
+
+#center-text {
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 72px;
+    color: #fff;
+    text-shadow:
+        0 0 20px rgba(255, 255, 255, 0.8),
+        0 0 40px rgba(255, 255, 255, 0.5),
+        4px 4px 0 #000;
+    z-index: 30;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.05s;
+    font-weight: bold;
+}
+
+#center-text.visible {
+    opacity: 1;
+}
+
+#center-text.shoubu {
+    font-size: 56px;
+    color: #c4a574;
+}
+
+/* リザルト画面 */
+#result-screen {
+    background: rgba(0, 0, 0, 0.9);
+    flex-direction: column;
+}
+
+.result-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+#result-message {
+    font-size: 32px;
+    color: #c4a574;
+    text-shadow: 2px 2px 0 #000;
+}
+
+#result-score {
+    font-size: 24px;
+    color: #fff;
+    text-shadow: 2px 2px 0 #000;
+}
+
+#result-time {
+    font-size: 18px;
+    color: #aaa;
+    text-shadow: 1px 1px 0 #000;
+}
+
+/* 画面フラッシュ効果 */
+.flash-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    pointer-events: none;
+    z-index: 100;
+    opacity: 0;
+}
+
+.flash-overlay.active {
+    animation: flash 0.3s ease-out;
+}
+
+@keyframes flash {
+    0% { opacity: 0.8; }
+    100% { opacity: 0; }
+}
+
+/* ブラックアウト効果（場面転換用） */
+.blackout-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    pointer-events: none;
+    z-index: 100;
+    opacity: 0;
+    transition: opacity 0.4s ease-in-out;
+}
+
+.blackout-overlay.active {
+    opacity: 1;
+}
+
+/* 勝利セリフ表示 */
+#victory-line {
+    position: absolute;
+    bottom: 30%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.85);
+    border: 3px solid #c4a574;
+    padding: 15px 25px;
+    width: 85%;
+    max-width: 320px;
+    z-index: 25;
+    text-align: center;
+}
+
+#victory-line .speaker {
+    color: #c4a574;
+    font-size: 12px;
+    display: block;
+    margin-bottom: 8px;
+}
+
+#victory-line .line {
+    color: #fff;
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+/* 縦画面がデフォルト - 横画面時のメッセージは不要 */
+#rotate-message {
+    display: none;
+}
+
+/* スマホ対応（縦画面ベース） */
+@media (max-height: 500px) {
+    .wooden-sign h1 {
+        font-size: 28px;
+        letter-spacing: 4px;
+    }
+
+    .wooden-sign {
+        padding: 12px 25px;
+    }
+
+    .pixel-btn {
+        font-size: 16px;
+        padding: 8px 24px;
+    }
+
+    #center-text {
+        font-size: 56px;
+    }
+}
+
+/* 大きい画面対応 */
+@media (min-width: 768px) {
+    .wooden-sign h1 {
+        font-size: 48px;
+        letter-spacing: 8px;
+    }
+
+    .pixel-btn {
+        font-size: 24px;
+        padding: 14px 40px;
+    }
+
+    #ui-top {
+        font-size: 18px;
+    }
+
+    #time-display {
+        font-size: 32px;
+        padding: 12px 30px;
+    }
+
+    #center-text {
+        font-size: 96px;
+    }
+
+    #dialogue-box {
+        max-width: 500px;
+        padding: 15px 25px;
+    }
+
+    #dialogue-text {
+        font-size: 18px;
+    }
+}

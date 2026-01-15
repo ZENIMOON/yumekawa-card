@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="screen-orientation" content="portrait">
+    <title>侍の一撃</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div id="game-container">
+        <canvas id="game-canvas"></canvas>
+
+        <!-- タイトル画面 -->
+        <div id="title-screen" class="screen">
+            <div class="title-content">
+                <div class="wooden-sign">
+                    <h1>侍の一撃</h1>
+                </div>
+                <button id="start-btn" class="pixel-btn">はじめる</button>
+                <div class="settings">
+                    <label class="toggle-label">
+                        <input type="checkbox" id="bgm-toggle" checked>
+                        <span>BGM</span>
+                    </label>
+                    <label class="toggle-label">
+                        <input type="checkbox" id="se-toggle" checked>
+                        <span>SE</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- ゲーム画面 -->
+        <div id="game-screen" class="screen hidden">
+            <div id="ui-top">
+                <span id="current-score">現在：0人斬り</span>
+                <span id="high-score">最高：0人斬り</span>
+            </div>
+
+            <!-- 木の板（反応時間表示） -->
+            <div id="time-board" class="hidden">
+                <div id="time-display">--- ms</div>
+            </div>
+
+            <div id="dialogue-box" class="hidden">
+                <span id="dialogue-name"></span>
+                <span id="dialogue-text"></span>
+            </div>
+            <div id="victory-line" class="hidden">
+                <span class="speaker"></span>
+                <span class="line"></span>
+            </div>
+            <div id="center-text"></div>
+        </div>
+
+        <!-- リザルト画面 -->
+        <div id="result-screen" class="screen hidden">
+            <div class="result-content">
+                <div id="result-message"></div>
+                <div id="result-score"></div>
+                <div id="result-time"></div>
+                <button id="retry-btn" class="pixel-btn">もう一度</button>
+                <button id="title-btn" class="pixel-btn">タイトルへ</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/audio.js"></script>
+    <script src="js/characters.js"></script>
+    <script src="js/dialogues.js"></script>
+    <script src="js/renderer.js"></script>
+    <script src="js/game.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
